@@ -1,13 +1,20 @@
 module Main where
 
 
-
+import qualified Data.Text as T
+import qualified Data.List as L
 import System.IO  
 import           Text.Parsec
 import           Data.Time                      ( getCurrentTime )
 
-data KindleHighlight = KindleHighlight String String Integer Integer String deriving (Show, Eq, Ord)
+data KindleHighlight = KindleHighlight String String Integer Integer String deriving (Show, Eq)
 
+-- TODO
+-- change ordering
+-- For now just order by the first location
+-- if k
+instance Ord KindleHighlight where
+    compare (KindleHighlight t1 _ l1 _ _) (KindleHighlight t2 _ l2 _ _) = compare (t1, l1) (t2, l2)
 -- test
 -- test = parse remainingGroups "fail" ("\n" ++ exampleGroup ++ eogString )
 -- test = parse groups "fail" exampleGroup
@@ -16,14 +23,31 @@ data KindleHighlight = KindleHighlight String String Integer Integer String deri
 --
 --
 
-tests = parse locationStart "fail" "- Your Highlight on page 818-818 | Added on Wednesday, 24 October 2018 04:41:47"
-
-test = do
+main = do
     handle <- openFile "example.txt" ReadMode
     contents <- hGetContents handle
     let highlights = parse groups "fail" contents
-    print highlights
+    case highlights of
+        Right a -> do
+            let filteredHigh = filterByBookTitle "James P. Carse - Finite and Infinite Games_ A Vision of Life as Play and Possibility-Free Press (1986)" a
+            let sortedHigh = L.sort filteredHigh
+            printKindleHighlights sortedHigh
+            -- print sortedHigh
+        Left _ -> print("fail")
     hClose handle
+
+getContent (KindleHighlight _ _ _ _ content) = content
+
+printKindleHighlights (x:xs) = do
+    putStrLn (getContent x ++ "\n\n")
+    printKindleHighlights xs
+printKindleHighlights _ = print "\n\n"
+
+filterByBookTitle :: String -> [KindleHighlight] -> [KindleHighlight]
+filterByBookTitle title = filter (checkBookTitle title)
+
+checkBookTitle :: String -> KindleHighlight -> Bool
+checkBookTitle a (KindleHighlight title _ _ _ _) = (a == title)
 
 -- csvFile :: GenParser Char st [[String]]
 -- csvFile = do
@@ -72,7 +96,7 @@ highlight = do
     line
     line
     h <- line
-    let x = KindleHighlight t hl (head l) (last l) h
+    let x = KindleHighlight (T.unpack (T.strip (T.pack t))) hl (head l) (last l) h
     return x
 
 line :: Parsec String st String
@@ -107,9 +131,9 @@ printTime = do
   print (show time)
 
 
-greet name = "Hello " ++ name ++ "!"
+-- greet name = "Hello " ++ name ++ "!"
 
-main :: IO ()
-main = do
-  putStrLn $ greet "John"
-  putStrLn $ greet "Mary"
+-- main :: IO ()
+-- main = do
+--   putStrLn $ greet "John"
+--   putStrLn $ greet "Mary"
