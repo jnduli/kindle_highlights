@@ -3,11 +3,42 @@ module Main where
 
 import qualified Data.Text as T
 import qualified Data.List as L
+import qualified Data.Set as Set
 import System.IO  
 import           Text.Parsec
 import           Data.Time                      ( getCurrentTime )
 
+import CommandOptions
+
+
+main :: IO ()
+main = do
+    options <- getCommandlineOptions
+    let fileName = getFilePath options
+    let inputType = getInputType options
+    handle <- openFile fileName ReadMode
+    contents <- hGetContents handle
+    let highlights = parse groups "fail" contents
+    case highlights of
+        Right a -> case inputType of
+                KindleList _ -> print (getUniqueBooks a)
+                KindleFilter s -> printKindleHighlights (filterByBookTitle s a)
+        Left _ -> print "fail"
+    hClose handle
+
+
 data KindleHighlight = KindleHighlight String String Integer Integer String deriving (Show, Eq)
+
+getContent:: KindleHighlight -> String
+getContent (KindleHighlight _ _ _ _ content) = content
+
+getTitle:: KindleHighlight -> String
+getTitle (KindleHighlight title _ _ _ _) = title
+
+
+getUniqueBooks :: [KindleHighlight] -> Set.Set String
+getUniqueBooks [] = Set.empty
+getUniqueBooks xs = Set.fromList [getTitle x | x <- xs]
 
 -- TODO
 -- change ordering
@@ -23,20 +54,19 @@ instance Ord KindleHighlight where
 --
 --
 
-main = do
-    handle <- openFile "example.txt" ReadMode
-    contents <- hGetContents handle
-    let highlights = parse groups "fail" contents
-    case highlights of
-        Right a -> do
-            let filteredHigh = filterByBookTitle "James P. Carse - Finite and Infinite Games_ A Vision of Life as Play and Possibility-Free Press (1986)" a
-            let sortedHigh = L.sort filteredHigh
-            printKindleHighlights sortedHigh
-            -- print sortedHigh
-        Left _ -> print("fail")
-    hClose handle
+-- main = do
+--     handle <- openFile "example.txt" ReadMode
+--     contents <- hGetContents handle
+--     let highlights = parse groups "fail" contents
+--     case highlights of
+--         Right a -> do
+--             let filteredHigh = filterByBookTitle "James P. Carse - Finite and Infinite Games_ A Vision of Life as Play and Possibility-Free Press (1986)" a
+--             let sortedHigh = L.sort filteredHigh
+--             printKindleHighlights sortedHigh
+--             -- print sortedHigh
+--         Left _ -> print("fail")
+--     hClose handle
 
-getContent (KindleHighlight _ _ _ _ content) = content
 
 printKindleHighlights (x:xs) = do
     putStrLn (getContent x ++ "\n\n")
