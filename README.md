@@ -1,15 +1,12 @@
 # kindle-highlights
 
-This is used to scan through the kindle highlights file format for
-things.
+This scans through the kindle highlights file and filters by books.
+
+## Usage
+- `kindle-highlights -f example.txt -l` or `kindle-highlights -f example.txt --list`: This lists all the books found in the file. It also adds a filter column that can be used when filtering. 
+- `kindle-highlights -f example.txt --filter id/name_of_book`: This
+  takes in a book id (provided by the list command) or the name of a
+  book to filter by. It outputs all the highlights found from the file.
 
 Features to add:
-- list all books in file
-- filter highlights for a book
 - support different types of highlights e.g. notes, bookmarks
-
-
-Command line options to work on:
-- `--list`: shows all books in the file
-- `--filter`: show content from this book. Support fuzzy matching.
-- `--type`: show types of content in the book
