@@ -7,7 +7,12 @@ import           Text.Parsec
 
 
 -- KindleHighlight data type
-data KindleHighlight = KindleHighlight String String Integer Integer String deriving (Show, Eq)
+-- TODO: Perhaps use record syntax for this
+type Title = String
+type HighlightType = String
+type Content = String
+type Location = Integer
+data KindleHighlight = KindleHighlight Title HighlightType Location Location Content deriving (Show, Eq)
 
 -- TODO
 -- change ordering
