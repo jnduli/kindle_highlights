@@ -13,9 +13,9 @@ build-type:          Simple
 cabal-version:       >=1.10
 extra-source-files:  README.md
 
-executable kindle-highlights
+library
+  exposed-modules:     KindleHighlights, CommandOptions
   hs-source-dirs:      src
-  main-is:             Main.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5,
                        parsec,
@@ -23,4 +23,33 @@ executable kindle-highlights
                        text,
                        containers,
                        time
-  other-modules:       CommandOptions
+
+--executable kindle-highlights
+--  hs-source-dirs:      src
+--  main-is:             Main.hs
+--  default-language:    Haskell2010
+--  build-depends:       base >= 4.7 && < 5,
+--                       parsec,
+--                       optparse-applicative,
+--                       text,
+--                       containers,
+--                       time
+
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs: test
+  other-modules:       ParserSpec 
+  build-depends:       base >= 4.7 && < 5,
+                       parsec,
+                       optparse-applicative,
+                       text,
+                       containers,
+                       kindle-highlights,
+                       time,
+                       hspec >= 2.7,
+                       hspec-discover >= 2.7
+  default-language:    Haskell2010
+  ghc-options: -Wall
+  build-tool-depends: hspec-discover:hspec-discover == 2.*
