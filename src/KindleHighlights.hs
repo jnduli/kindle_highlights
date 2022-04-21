@@ -54,7 +54,7 @@ filterByBookId :: Int -> [KindleHighlight] -> [KindleHighlight]
 filterByBookId id xs = filterByBookTitle (Set.elemAt id (getUniqueBooks xs)) xs
 
 filterByBookTitle :: String -> [KindleHighlight] -> [KindleHighlight]
-filterByBookTitle title = filter (checkBookTitle title)
+filterByBookTitle title xs = L.sort $ filter (checkBookTitle title) xs
 
 
 -- Pprsing Methods
