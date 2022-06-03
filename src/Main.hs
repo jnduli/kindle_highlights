@@ -24,6 +24,3 @@ main = do
         Nothing -> printKindleHighlights (filterByBookTitle s a)
     Left _ -> print "fail"
   hClose handle
-
-
-

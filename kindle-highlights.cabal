@@ -1,55 +1,51 @@
+cabal-version:       2.2
 name:                kindle-highlights
 version:             0.1.0.0
 -- synopsis:
 -- description:
 homepage:            https://github.com/jnduli/kindle-highlights#readme
-license:             BSD3
+license:             MIT
 license-file:        LICENSE
 author:              John Nduli
 maintainer:          yohanaizraeli@gmail.com
 copyright:           2020 John Nduli
 category:            Web
 build-type:          Simple
-cabal-version:       >=1.10
 extra-source-files:  README.md
 
-library
-  exposed-modules:     KindleHighlights, CommandOptions
-  hs-source-dirs:      src
+
+common shared-properties
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5,
                        parsec,
-                       optparse-applicative,
                        text,
                        containers,
                        time
 
---executable kindle-highlights
---  hs-source-dirs:      src
---  main-is:             Main.hs
---  default-language:    Haskell2010
---  build-depends:       base >= 4.7 && < 5,
---                       parsec,
---                       optparse-applicative,
---                       text,
---                       containers,
---                       time
+library
+  import:              shared-properties
+  exposed-modules:     KindleHighlights,
+                       CommandOptions
+  hs-source-dirs:      src
+  build-depends:       optparse-applicative
+
+
+executable kindle-highlights
+  import:              shared-properties
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  build-depends:       optparse-applicative,
+                       kindle-highlights,
 
 
 test-suite spec
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  hs-source-dirs: test
-  other-modules:       ParserSpec 
-  build-depends:       base >= 4.7 && < 5,
-                       parsec,
-                       optparse-applicative,
-                       text,
-                       containers,
-                       kindle-highlights,
-                       time,
+  import:              shared-properties
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  other-modules:       ParserSpec
+  build-depends:       kindle-highlights,
                        hspec >= 2.7,
                        hspec-discover >= 2.7
-  default-language:    Haskell2010
   ghc-options: -Wall
   build-tool-depends: hspec-discover:hspec-discover == 2.*
