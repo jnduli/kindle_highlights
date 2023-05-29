@@ -32,7 +32,7 @@ library
 
 executable kindle-highlights
   import:              shared-properties
-  hs-source-dirs:      app
+  hs-source-dirs:      src
   main-is:             Main.hs
   build-depends:       optparse-applicative,
                        kindle-highlights,
